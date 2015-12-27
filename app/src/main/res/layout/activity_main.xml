@@ -20,17 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:elevation="8dp"
-        android:padding="5dp"
-        android:layout_height="380dp"
-        android:layout_below="@+id/text_service">
-
         <LinearLayout
+            android:layout_below="@id/text_service"
             android:layout_width="match_parent"
             android:orientation="vertical"
-            android:layout_height="match_parent">
+            android:layout_height="340dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,8 +67,6 @@
 
             </ListView>
         </LinearLayout>
-
-    </ScrollView>
 
     <Button
         android:id="@+id/button_start_stop"

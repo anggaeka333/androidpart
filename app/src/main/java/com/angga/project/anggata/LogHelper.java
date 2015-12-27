@@ -9,7 +9,7 @@ import java.util.List;
 public class LogHelper {
 
     private static LogHelper logHelper;
-    private List<LogItem> logItems;
+    private ArrayList<LogItem> logItems;
 
 
     private LogHelper() {
@@ -23,7 +23,7 @@ public class LogHelper {
         return logHelper;
     }
 
-    public List<LogItem> getLogItems() {
+    public ArrayList<LogItem> getLogItems() {
         return logItems;
     }
 

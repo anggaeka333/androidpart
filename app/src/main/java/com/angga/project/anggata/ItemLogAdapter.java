@@ -1,20 +1,25 @@
 package com.angga.project.anggata;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ItemLogAdapter extends BaseAdapter {
 
     Context context;
+    ArrayList<LogItem> logItems;
 
-    public ItemLogAdapter (Context context) {
+    public ItemLogAdapter (Context context, ArrayList<LogItem> logItems) {
         this.context = context;
-
+        this.logItems = logItems;
     }
 
     @Override
@@ -34,9 +39,10 @@ public class ItemLogAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        LogItem logItem = logItems.get(position);
         ViewHolder viewHolder;
         if(convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_log, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_log, null);
             viewHolder = new ViewHolder();
             viewHolder.time = (TextView) convertView.findViewById(R.id.text_time);
             viewHolder.lat = (TextView) convertView.findViewById(R.id.text_lat);
@@ -48,6 +54,11 @@ public class ItemLogAdapter extends BaseAdapter {
         else
             viewHolder = (ViewHolder) convertView.getTag();
 
+        viewHolder.v.setText(logItem.getVString());
+        viewHolder.time.setText(logItem.getTimeString());
+        viewHolder.lat.setText(logItem.getLatString());
+        viewHolder.lon.setText(logItem.getLonString());
+        Log.d("adapter", "converted");
         return convertView;
     }
 

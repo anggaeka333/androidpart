@@ -2,10 +2,16 @@ package com.angga.project.anggata;
 
 
 import android.Manifest;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -15,20 +21,47 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-public class LocationHelper implements
+public class LocationHelper extends Service implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 
     private static LocationHelper locationHelper;
 
-    private GoogleApiClient googleApiClient;
-    private Context context;
+    private static GoogleApiClient googleApiClient;
     private Location location;
     private LocationRequest locationRequest;
     private LocationHelperListener listener;
+    private static Context context;
+    private Intent intent;
+    private boolean isRunning;
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        startService();
+        Log.d("service", "started");
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopService();
+    }
 
     public interface LocationHelperListener {
         public void onGetNewLocation(Location location);
     }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public LocationHelper() {};
 
     private LocationHelper(Context context) {
         this.context = context;
@@ -39,6 +72,8 @@ public class LocationHelper implements
                     .addApi(LocationServices.API)
                     .build();
             createLocationRequest();
+            isRunning = false;
+            listener = (LocationHelperListener) context;
         }
     }
 
@@ -48,11 +83,16 @@ public class LocationHelper implements
         return locationHelper;
     }
 
-    public void startService() {
+
+    private void startService() {
+        if(googleApiClient == null)
+            locationHelper = new LocationHelper(context);
         googleApiClient.connect();
+        isRunning = true;
     }
 
-    public void stopService() {
+    private void stopService() {
+        isRunning = false;
         stopLocationUpdates();
         googleApiClient.disconnect();
     }
@@ -76,6 +116,7 @@ public class LocationHelper implements
     public void onLocationChanged(Location location) {
         this.location = location;
         this.listener.onGetNewLocation(location);
+        Log.d("Location changed",location.getLatitude() + ", " + location.getLongitude());
     }
 
     @Override
