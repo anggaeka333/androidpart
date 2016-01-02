@@ -29,7 +29,7 @@ public class LocationHelper extends Service implements
     private static GoogleApiClient googleApiClient;
     private Location location;
     private LocationRequest locationRequest;
-    private LocationHelperListener listener;
+    private static LocationHelperListener listener;
     private static Context context;
     private Intent intent;
     private boolean isRunning;
@@ -49,12 +49,13 @@ public class LocationHelper extends Service implements
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         stopService();
+        super.onDestroy();
     }
 
     public interface LocationHelperListener {
         public void onGetNewLocation(Location location);
+        public void onServiceStateChanged(boolean state);
     }
 
     public boolean isRunning() {
@@ -89,10 +90,12 @@ public class LocationHelper extends Service implements
             locationHelper = new LocationHelper(context);
         googleApiClient.connect();
         isRunning = true;
+        listener.onServiceStateChanged(isRunning);
     }
 
     private void stopService() {
         isRunning = false;
+        listener.onServiceStateChanged(isRunning);
         stopLocationUpdates();
         googleApiClient.disconnect();
     }

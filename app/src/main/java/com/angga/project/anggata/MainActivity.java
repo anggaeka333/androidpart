@@ -30,18 +30,11 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getView();
         locationHelper = LocationHelper.GetInstance(this);
         logHelper = LogHelper.getInstance();
         logItems = logHelper.getLogItems();
         itemLogAdapter = new ItemLogAdapter(this, logItems);
-        logContainer.setAdapter(itemLogAdapter);
-    }
-
-    @Override
-    protected void onResume() {
-        isServiceStarted = locationHelper.isRunning();
-        super.onResume();
+        getView();
     }
 
     private void getView() {
@@ -49,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         serviceText = (TextView) findViewById(R.id.text_service);
         logContainer = (ListView) findViewById(R.id.log_container);
         startStopButton.setOnClickListener(this);
+        logContainer.setAdapter(itemLogAdapter);
         setServiceText();
     }
 
@@ -62,19 +56,18 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private void startStopButtonClicked() {
         if(!isServiceStarted) {
             startService(new Intent(getBaseContext(), LocationHelper.GetInstance(this).getClass()));
-            isServiceStarted = true;
         }
         else {
             stopService(new Intent(getBaseContext(),LocationHelper.GetInstance(this).getClass()));
-            isServiceStarted = false;
         }
         setServiceText();
     }
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
+        isServiceStarted = locationHelper.isRunning();
         setServiceText();
-        super.onStart();
+        super.onResume();
     }
 
     @Override
@@ -83,7 +76,14 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         logHelper.addToLog(location, System.currentTimeMillis()/1000);
         logItems = logHelper.getLogItems();
         itemLogAdapter.notifyDataSetChanged();
+        logContainer.smoothScrollToPosition(logItems.size()-1);
         Log.d("Log",logHelper.getLogItems().size()+"");
+    }
+
+    @Override
+    public void onServiceStateChanged(boolean state) {
+        isServiceStarted = state;
+        setServiceText();
     }
 
     @Override

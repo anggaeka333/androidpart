@@ -24,12 +24,12 @@ public class ItemLogAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return logItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return logItems.get(position);
     }
 
     @Override
